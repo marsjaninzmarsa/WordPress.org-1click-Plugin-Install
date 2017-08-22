@@ -1,4 +1,6 @@
-chrome_extensions
+WordPress.org 1click plugin install
 =================
 
-My chrome extensions repo
+Install a wordpress plugin right from the wordpress.org plugin page!
+
+WIP.
