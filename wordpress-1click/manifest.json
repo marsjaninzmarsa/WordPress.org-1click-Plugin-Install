@@ -1,37 +1,79 @@
 {
-  "name": "Wordpress.org 1click plugin install",
-  "version": "0.0.2",
+  "name": "WordPress.org 1click plugin install",
+  "short_name": "WordPress 1click plugin",
+  "version": "0.0.3",
   "manifest_version": 2,
   "description": "Install a wordpress plugin right from the wordpress.org plugin page!",
   "homepage_url": "http://extensionizr.com",
+
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "page_action": {
-    "default_icon": "icons/icon19.png",
-    "default_title": "page action demo",
-    "default_popup": "src/page_action/page_action.html"
+
+  "applications": {
+    "gecko": {
+      "id": "oneclickinstall@wordpress.org",
+      "strict_min_version": "53.0"
+    }
   },
-  "options_page" : "src/page_action/page_action.html#settings",
+
+	"permissions": [
+    "*://*.wordpress.org/plugins/*",
+    "activeTab",
+	  "storage"
+  ],
+	"web_accessible_resources" : [
+		"src/page_action/page_action.html",
+    "src/page_action/page_action.css",
+    "src/inject/inject.css"
+	],
+
+  "page_action": {
+    "browser_style": true,
+    "chrome_style": true,
+    "default_icon": "icons/icon19.png",
+    "default_title": "1click plugin install",
+    "default_popup": "src/page_action/page_action.html#buttons"
+  },
+
+  "options_ui" : {
+    "page": "src/page_action/page_action.html#settings",
+    "chrome_style": true,
+    "browser_style": true
+  },
+
   "content_scripts": [
     {
       "matches": [
-        "http://wordpress.org/extend/plugins/*"
+        "*://*.wordpress.org/plugins/*"
       ],
       "css": [
         "src/inject/inject.css"
       ],
       "js": [
+        "js/jquery-3.2.1.min.js",
         "src/inject/inject.js"
       ]
+    },
+    {
+      "matches": [
+        "*://*/wp-admin/*"
+      ],
+      "js": [
+        "js/jquery-3.2.1.min.js",
+        "detect.js"
+      ]
     }
-    ],
-	"permissions": [
-	    "storage"
-  	],
-	"web_accessible_resources" : [
-		"src/page_action/page_action.html"
-	]
+  ],
+
+  "background": {
+    "persistent": false,
+    "scripts": [
+      "js/uri-1.18.10.min.js",
+      "background.js"
+    ]
+  }
+
 }
