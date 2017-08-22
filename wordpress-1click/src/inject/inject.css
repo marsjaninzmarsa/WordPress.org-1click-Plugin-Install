@@ -17,7 +17,7 @@
    	z-index: 99999999999;
 	pointer-events : none;
 	opacity: 0;
-	-webkit-transition : all 250ms ease;
+	transition : all 250ms ease;
 	/*opacity: 1;*/
 }
 .overlay.show{
@@ -26,7 +26,7 @@
 	cursor: pointer
 }
 
-#my_awesome_iframe_container{
+#oneclick_iframe_container{
 	position: absolute;
 	width: 500px;
 	height: 500px;
@@ -39,11 +39,11 @@
 	box-sizing: border-box;
 	padding:0;
 }
-.show #my_awesome_iframe_container{
+.show #oneclick_iframe_container{
 	top:50% !important;
 }
 
-#my_awesome_iframe_container::after{
+#oneclick_iframe_container::after{
 	content : "x";
 	background: #000;
 	font-size: 25px;
@@ -58,5 +58,5 @@
 	border-radius:50%;
 	width:30px;height:30px;
 	box-shadow:0 0 3px #fff;
-	cursor: pointer
+	cursor: pointer;
 }

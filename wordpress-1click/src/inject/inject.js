@@ -1,40 +1,80 @@
-var overlay_html = '<div id="overlay" class="overlay">' +
-		'<div id="my_awesome_iframe_container">' +
-		'<iframe id="1click_iframe" width=100% height=100% frameborder=0></iframe>' +
-		'</div>' +
-		'</div>';
+console.log("I'm alive!");
 
-//need to get the name of the extension
-var download_links = document.querySelectorAll('a[itemprop="downloadUrl"]');
-if(download_links.length){
-	for (var i = 0; i < download_links.length; i++) {
-		var link = download_links[i];
-		plugin_name = link.href.split('/').pop().split('.')[0];
-		var p = document.createElement('p');
-			p.innerHTML = '<a href="#">Install</a>';
-			p.className = "button special-plugin-button";
-			link.parentElement.insertAdjacentElement('beforebegin',p);
-			p.dataset.name = plugin_name;
-			p.querySelector('a').addEventListener('click',clickHandler,true);
+//need to get the slug of the extension
+var plugins = $('article.plugin');
+var plugin_data;
+plugins.each(function(index, plugin) {
+	plugin_header = $(plugin).find('h1.plugin-title, h2.entry-title');
+	plugin_data = {
+		url: plugin_url = $(plugin_header).find('a').attr('href'),
+		name: $(plugin_header).text(),
+		slug: extractPluginSlug(plugin_url),
+	};
+	link = $(plugin).find('a.plugin-download');
+	if(link.length) {
+		$(plugin).find('.button-primary.button-install').remove();
+		$('<a href="#">Install</a>')
+			.addClass([
+				'button',
+				'button-large',
+				'button-primary',
+				'button-install'
+			].join(' '))
+			.data('plugin', plugin_data)
+			.click(clickHandler)
+			.insertAfter(link);
+		$(link)
+			.addClass('button-secondary')
+			.removeClass('download-button');
 	}
-	document.querySelector('body').insertAdjacentHTML('beforeend',overlay_html);
+});
+
+if(plugins.length == 1) {
+	chrome.runtime.sendMessage({
+	  from:    'content',
+	  subject: 'showPageAction',
+	  plugin:  plugin_data
+	});
+}
+
+var style = document.createElement('link');
+style.rel = 'stylesheet';
+style.type = 'text/css';
+var cssUrl = chrome.extension.getURL('src/inject/inject.css');
+style.href = cssUrl;
+// (document.head||document.documentElement).appendChild(style);
+
+$('#oneclick_overlay').remove();
+$(`
+	<div id="oneclick_overlay" class="overlay" hidden>
+		<div id="oneclick_iframe_container">
+			<iframe id="oneclick_iframe" width=100% height=100% frameborder=0></iframe>
+		</div>
+		<!-- <link rel="stylesheet" href="${cssUrl}" /> -->
+	</div>
+`).click(removeOverlay)
+.appendTo('body');
+
+function extractPluginSlug(url) {
+	regex = /https:\/\/(?:(?:\w{2}|downloads)\.)?wordpress\.org\/plugins?\/(\w+(?:-\w+)*)(?:\/|[\d.]*\.zip)/;
+	return url.match(regex)[1] || null;
 }
 
 function clickHandler(e){
-	var plugin_name = this.parentNode.dataset.name;
 	e.preventDefault();
-	var iframe = document.querySelector('#my_awesome_iframe_container iframe');
-		iframe.src = chrome.extension.getURL('src/page_action/page_action.html') + '?plugin_name=' + plugin_name + "#buttons";
+	plugin = $(this).data('plugin');
+	iframe = $('#oneclick_iframe');
+	console.log(plugin, iframe);
+	src = chrome.extension.getURL('src/page_action/page_action.html') + '?' + $.param(plugin) + "#buttons";
+	$(iframe).attr('src', src);
 //	setts.child = new_win(url + "/plugin-install.php?tab=plugin-information&plugin=" + plugin_name +"&TB_iframe=true&width=600&height=550",'new_win',600,550);
 
-	document.querySelector('#overlay').classList.add('show');
-	document.querySelector('#overlay').onclick = removeOverlay;
-//	window.onfocus = removeOverlay;
-
-
+	$('#oneclick_overlay').prop('hidden', false).addClass('show')
 }
+
 function removeOverlay(){
-
-	document.getElementById("overlay").classList.remove('show');
-
+	var overlay = $('#oneclick_overlay').removeClass('show');
+	setTimeout(function() {
+		$(overlay).prop('hidden', true);
+	}, 1000)
 }
