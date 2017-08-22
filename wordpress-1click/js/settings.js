@@ -3,19 +3,32 @@ var blogs = [
 		name : "demo-blog",
 		url : "http://demo-blog.me/wp-admin"
 	}
-]
+];
 
-$(document).ready(function(){
+var plugin;
+
+
+$(document).ready(function() {
+	uri = new URI(window.location)
 	//detect if we're in iframe mode
-	loc = window.location.search.substr(1);
-	if(loc.split("=").length){
-		//set the page to "buttons" mode
-		window.location.hash = "buttons";
-		//save the plugin name from query params
-		plugin_name = loc.split('=')[1];
-		$('.plugin_name').text('"' + plugin_name + '"');
-
+	if(uri.fragment() == 'buttons' || !uri.fragment()){
+		if(uri.query()) {
+			//save the plugin name from query params
+			plugin = uri.search(true);
+			$('.plugin_name').text(plugin.name);
+		} else {
+			chrome.tabs.query({
+				active:true,
+				currentWindow:true
+			}, function(tabs) {
+			    currentTab = tabs[0];
+			    if(currentTab) {
+			    	console.log(cur)
+			    }
+			});
+		}
 	}
+
 	chrome.storage.sync.get('settings',function(obj){
 		if(Object.keys(obj).length && obj.settings.length){
 			blogs = obj.settings;
@@ -30,7 +43,15 @@ $(document).ready(function(){
 	});
 	$('#blog_buttons').on('click','.install',function(e){
 		e.preventDefault();
-		win = new_win(this.href + "/plugin-install.php?tab=plugin-information&plugin=" + plugin_name +"&TB_iframe=true&width=600&height=550",this.textContent,600,550);
+		url = new URI(this.href);
+		url.segment('plugin-install.php').search({
+			tab: 'plugin-information',
+			plugin: plugin.slug,
+			TB_iframe: true,
+			width: 600,
+			height: 550
+		})
+		win = new_win(url.href(),this.textContent,600,550);
 	})
 	$('#blogs').on('change','input',function(){
 		//get the changed blog id

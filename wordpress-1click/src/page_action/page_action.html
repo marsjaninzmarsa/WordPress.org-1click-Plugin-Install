@@ -1,114 +1,95 @@
 <!DOCTYPE HTML>
-<html lang="en-US">
-<head>
-	<meta charset="UTF-8">
-	<title>wp-1click settings page</title>
-	<script type="text/javascript" src="../../js/jquery-1.8.3.min.js"></script>
-	<script type="text/javascript" src="../../js/settings.js"></script>
-	<style type="text/css">
-		body {
-			padding: 10px;
-			height: auto;
-			width: 460px;
-			font-family: Helvetica, Ubuntu, Arial, sans-serif;
-		}
-		#settings{
-			display: none;
-		}
-		#settings:target{
-			display: block;
-		}
-		#buttons{
-			display: none;
-		}
-		#buttons:target{
-			display: block
-		}
-		h1 {
-			font-size: 2em;
-		}
-		.template,.template2{
-			display: none !important;
-		}
-		.del{
-			display: inline-block;
-			color: #fa5853;
-			text-decoration: underline;
-			cursor: pointer
-		}
-		fieldset{
-			border: none;
-			padding: 0;
-			margin: 0
-		}
-		input{
-			font-size: 18px;
-			padding:2px 5px;
-		}
-		.name{
-			max-width: 100px;
-		}
-		.url{
-			width: 250px;
-		}
-		.button{
-			border: none;
-			background: #687dd9;
-			color: #fff;
-			cursor: pointer;
-			padding:10px;
-			font-size: 15px;
-			border-radius:2px;
-			display: inline-block;
-			text-decoration: none
-		}
-		.button:hover,.button:focus{
-			background: #5f6adb;
-		}
-		.button:active{
-			background: #3e4edb;
-		}
-		.setts{
-			float:left;
-			clear:both;
-		}
-		.install::after{
-			content : attr(data-name);
-			font-weight: bold;
-		}
-		#blog_buttons .button{
-			display: block !important;
-			max-width: 450px;
-			margin:5px 0;
-			text-align: center;
-			font-size: 1.8em;
-		}
-	</style>
-</head>
-<body>
-<div id="settings">
-	<h1>Enter your website URL below</h1>
-	<p>Add a name for your blog and a wp-admin url, something like http://myblog.me/wp-admin</p>
-	<form action="#" id="blogs">
-		<button id="submit" class="button">Add another blog</button>
-		<a href="#buttons" class="button back">Done</a>
-		<fieldset class="template">
-			<input type="text" class="name" placeholder="Blog name">
-			<input type="text" class="url" placeholder="Blog Url">
-			<div class="del">remove</div>
-		</fieldset>
-	</form>
-</div>
+<html lang="en-US" />
+	<head>
+		<meta charset="UTF-8" />
+		<title>wp-1click settings page</title>
+		<script src="../../js/jquery-3.2.1.min.js"></script>
+		<script src="../../js/jquery-ui.min.js"></script>
+		<script src="../../js/uri-1.18.10.min.js"></script>
+		<script src="page_action.js"></script>
+		<link rel="stylesheet" href="page_action.css" />
+	</head>
+	<body>
+		<div class="tabs">
+			<section class="panel" id="blogs">
+				<header class="panel-section panel-section-header togglable">
+					<div class="on-show">
+						<h3>Install plugin <q class="plugin-name"></q></h3>
+					</div>
+					<div class="on-edit">
+						<button class="return icon">Return</button>
+						<h3 class="text-section-header">Edit Blogs</h3>
+					</div>
+				</header>
+				<ul class="panel-section panel-section-main panel-section-list blog-list">
+					<li class="panel-list-item blog">
+						<div class="grip on-edit"></div>
+						<div class="icon on-show"></div>
+						<div class="blog-name text">Blog Name</div>
+						<div class="install-button-wrapper button-wrapper on-show">
+							<button class="default install">Install Plugin</button>
+						</div>
+						<div class="remove-button-wrapper button-wrapper on-edit">
+							<button class="remove icon">Remove</button>
+						</div>
+					</li>
+				</ul>
+				<div class="notice on-empty">
+					<h3>Whoops, it seems that you don't have any blogs set-up</h3>
+				</div>
+				<footer class="panel-section panel-section-footer togglable">
+					<div class="on-show">
+						<button class="panel-section-footer-button edit">Edit</button>
+					</div>
+					<div class="on-edit">
+						<button class="panel-section-footer-button return">Done</button>
+						<div class="panel-section-footer-separator"></div>
+						<button class="panel-section-footer-button default add">Add Blog</button>
+					</div>
+					<div class="on-empty">
+						<button class="panel-section-footer-button default add">Add Blog</button>
+					</div>
+				</footer>
+			</section>
 
-<div id="buttons">
-	<h1>Choose on which blog you want to install the plugin <span class="plugin_name"></span></h1>
+			<section class="panel" id="add">
+				<header class="panel-section panel-section-header">
+					<button class="return icon">Return</button>
+					<h3 class="text-section-header reusable">
+						<span class="on-add">Add</span>
+						<span class="on-edit">Edit</span>
+						blog
+					</h3>
+				</header>
+				<form class="panel-section panel-section-main panel-section-formElements" id="blog-details-form">
+					<div class="panel-formElements-item">
+						<label>Blog Name:
+							<input type="text" name="name" placeholder="My Example Blog" required tabindex="1" />
+						</label>
+					</div>
+					<div class="panel-formElements-item">
+						<label>WP Admin URL:
+							<input type="url" name="url" placeholder="http://example.com/wp-admin" required tabindex="2" />
+						</label>
+					</div>
+				</form>
+				<footer class="panel-section panel-section-footer">
+					<button class="panel-section-footer-button return" tabindex="4">Cancel</button>
+					<div class="panel-section-footer-separator"></div>
+					<button class="panel-section-footer-button default confirm" type="submit" form="blog-details-form" tabindex="3">Confirm</button>
+				</footer>
+			</section>
+<!--
+			<div id="blogs">
+				<h3>Choose on which blog you want to install the plugin <q class="plugin_name"></q></h3>
 
-	<div id="blog_buttons">
-		<a id="blog_name_alex" href="http://alexw.me" data-blog_name="alex">Install "hotfix" plugin on alex</a>
-		<h3>Whoops, it seems that you don't have any blogs set-up</h3>
-	</div>
-	<a href="#" class="button install template2">Install <span class="plugin_name"></span> on </a>
-	<a href="#settings" class="button setts">Edit blogs</a>
-</div>
-</body>
+				<div id="blog_buttons">
+					<a id="blog_name_alex" href="http://alexw.me" data-blog_name="alex">Install "hotfix" plugin on alex</a>
+					<h3>Whoops, it seems that you don't have any blogs set-up</h3>
+				</div>
+				<a href="#" class="button install template2">Install <q class="plugin_name"></q> on </a>
+				<a href="#settings" class="button setts">Edit blogs</a>
+			</div> -->
+		</div>
+	</body>
 </html>
